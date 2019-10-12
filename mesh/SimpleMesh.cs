@@ -347,6 +347,8 @@ namespace g3
             return FaceGroups[i];
         }
 
+        public Dictionary<string, int> GroupNames { get; internal set; }
+
 
         public IEnumerable<Vector3d> VerticesItr() {
             int N = VertexCount;
@@ -603,6 +605,10 @@ namespace g3
             MaterialAssignment[meshID] = materialID;
         }
 
+        public void SetGroupNames(Dictionary<string, int> groupNames)
+        {
+            Meshes[nActiveMesh].GroupNames = groupNames;
+        }
     }
 
 }

@@ -385,6 +385,8 @@ namespace g3
                 return c;
             }
         }
+        public Dictionary<string, int> GroupNames { get; internal set; }
+
 
         // info
 

@@ -194,9 +194,10 @@ namespace g3
             return mesh;
         }
 
-         
-
-
+        public void SetGroupNames(Dictionary<string, int> groupNames)
+        {
+            Meshes[nActiveMesh].GroupNames = groupNames;
+        }
     }
 
 

@@ -113,6 +113,8 @@ namespace g3
         // optional
         bool SupportsMetaData { get; }
         void AppendMetaData(string identifier, object data);
+
+        void SetGroupNames(Dictionary<string, int> groupNames);
     }
 
 

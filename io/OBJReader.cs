@@ -86,6 +86,8 @@ namespace g3
 		Dictionary<string, OBJMaterial> Materials;
         Dictionary<int, string> UsedMaterials;
 
+        public Dictionary<string, int> GroupNames;
+
         bool m_bOBJHasPerVertexColors;
         int m_nUVComponents;
 
@@ -153,6 +155,8 @@ namespace g3
 
             if (buildResult.code != IOCode.Ok)
                 return buildResult;
+
+            builder.SetGroupNames(GroupNames);
 
             return new IOReadResult(IOCode.Ok, "");
         }
@@ -342,7 +346,7 @@ namespace g3
             int nMaxUVLength = 0;
             OBJMaterial activeMaterial = null;
 
-            Dictionary<string, int> GroupNames = new Dictionary<string, int>();
+            GroupNames = new Dictionary<string, int>();
             int nGroupCounter = 0;
             int nActiveGroup = Triangle.InvalidGroupID;
 

@@ -40,6 +40,8 @@ namespace g3
 
         public virtual void MakeMesh(DMesh3 m)
         {
+            int startVi = m.VertexCount;
+
             int nV = vertices.Count;
             bool bWantNormals = WantNormals && normals != null && normals.Count == vertices.Count;
             if (bWantNormals)
@@ -58,7 +60,7 @@ namespace g3
 					ni.uv = uv[i];
 				}
                 int vID = m.AppendVertex(ni);
-                Util.gDevAssert(vID == i);
+                Util.gDevAssert(vID == i + startVi);
             }
             int nT = triangles.Count;
             if (WantGroups && groups != null && groups.Length == nT) {

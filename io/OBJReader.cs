@@ -37,6 +37,7 @@ namespace g3
         public Index3i vUVs;
         public int nMaterialID;
         public int nGroupID;
+        public int tid;
 
         public void clear()
         {
@@ -71,7 +72,16 @@ namespace g3
         }
     }
 
+    internal struct Quad
+    {
 
+        public Index2i triangles;
+
+        public void clear()
+        {
+            triangles = new Index2i(DMesh3.InvalidID, DMesh3.InvalidID);
+        }
+    }
 
 
 
@@ -82,8 +92,11 @@ namespace g3
         DVector<float> vUVs;
         DVector<float> vColors;
         DVector<Triangle> vTriangles;
+        DVector<Quad> quads;
 
-		Dictionary<string, OBJMaterial> Materials;
+        private Quad workingQuad;
+
+        Dictionary<string, OBJMaterial> Materials;
         Dictionary<int, string> UsedMaterials;
 
         public Dictionary<string, int> GroupNames;
@@ -105,6 +118,8 @@ namespace g3
             this.splitDoubleSlash = new string[] { "//" };
             this.splitSlash = new char[] { '/' };
             MTLFileSearchPaths = new List<string>();
+            workingQuad = new Quad();
+
         }
 
 		// you need to initialize this with paths if you want .MTL files to load
@@ -227,6 +242,18 @@ namespace g3
                 m_nSetInvalidGroupsTo : t.nGroupID;
             return builder.AppendTriangle(t.vIndices[0], t.vIndices[1], t.vIndices[2], gid);
         }
+        int append_quad(IMeshBuilder builder, Quad q)
+        {
+            if (q.triangles.a < 0 || q.triangles.b < 0)
+            {
+                emit_warning(string.Format("[OBJReader] invalid quad:  {0} {1}", q.triangles.a, q.triangles.b));
+                return -1;
+            }
+            int tid1 = vTriangles[q.triangles.a].tid;
+            int tid2 = vTriangles[q.triangles.b].tid;
+
+            return builder.AppendQuad(tid1, tid2);
+        }
 
 
         IOReadResult BuildMeshes_Simple(ReadOptions options, IMeshBuilder builder)
@@ -252,7 +279,18 @@ namespace g3
 
             // [TODO] this doesn't handle missing vertices...
             for (int k = 0; k < vTriangles.Length; ++k)
-                append_triangle(builder, k, mapV);
+            {
+                int tid = append_triangle(builder, k, mapV);
+                var tri = vTriangles[k];
+                tri.tid = tid;
+                vTriangles[k] = tri;
+            }
+
+            // Append the quads
+            for (int q = 0; q < quads.Length; ++q)
+                append_quad(builder, quads[q]);
+
+
 
             if ( UsedMaterials.Count == 1 ) {       // [RMS] should not be in here otherwise
                 int material_id = UsedMaterials.Keys.First();
@@ -341,6 +379,7 @@ namespace g3
             vUVs = new DVector<float>();
             vColors = new DVector<float>();
             vTriangles = new DVector<Triangle>();
+            quads = new DVector<Quad>();
 
             bool bVerticesHaveColors = false;
             int nMaxUVLength = 0;
@@ -495,14 +534,16 @@ namespace g3
 
         private void append_face(string[] tokens, OBJMaterial activeMaterial, int nActiveGroup)
         {
+            bool isQuad = tokens.Length == 5;
             int nMode = 0;
             if (tokens[1].IndexOf("//") != -1)
                 nMode = 1;
             else if (tokens[1].IndexOf('/') != -1)
                 nMode = 2;
-
+            
             Triangle t = new Triangle();
             t.clear();
+            workingQuad.clear();
             for ( int ti = 0; ti < tokens.Length-1; ++ti) {
                 int j = (ti < 3) ? ti : 2;
                 if (ti >= 3)
@@ -542,6 +583,16 @@ namespace g3
                     vTriangles.Add(t);
                     if (t.is_complex())
                         HasComplexVertices = true;
+                    if (isQuad)
+                    {
+                        if (workingQuad.triangles.a == DMesh3.InvalidID)
+                            workingQuad.triangles.a = vTriangles.Length - 1;
+                        else if (workingQuad.triangles.b == DMesh3.InvalidID)
+                        {
+                            workingQuad.triangles.b = vTriangles.Length - 1;
+                            quads.Add(workingQuad);
+                        }
+                    }
                 }
             }
         }

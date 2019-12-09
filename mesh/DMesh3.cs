@@ -129,6 +129,10 @@ namespace g3
         RefCountVector edges_refcount;
         DVector<int> edges;
 
+        RefCountVector quads_refcount;
+        DVector<int> quads;
+
+
         int timestamp = 0;
         int shape_timestamp = 0;
 
@@ -165,6 +169,9 @@ namespace g3
 
             edges = new DVector<int>();
             edges_refcount = new RefCountVector();
+
+            quads = new DVector<int>();
+            quads_refcount = new RefCountVector();
         }
         public DMesh3(MeshComponents flags) : 
             this( (flags & MeshComponents.VertexNormals) != 0,  (flags & MeshComponents.VertexColors) != 0,
@@ -218,6 +225,9 @@ namespace g3
             triangles_refcount = new RefCountVector();
             edges = new DVector<int>();
             edges_refcount = new RefCountVector();
+            quads = new DVector<int>();
+            quads_refcount = new RefCountVector();
+
             max_group_id = 0;
 
             normals = (bNormals && copy.normals != null) ? new DVector<float>() : null;
@@ -288,6 +298,8 @@ namespace g3
             triangles_refcount = new RefCountVector();
             edges = new DVector<int>();
             edges_refcount = new RefCountVector();
+            quads = new DVector<int>();
+            quads_refcount = new RefCountVector();
             max_group_id = 0;
 
             normals = (bNormals && copy.HasVertexNormals) ? new DVector<float>() : null;

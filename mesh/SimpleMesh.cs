@@ -609,6 +609,11 @@ namespace g3
         {
             Meshes[nActiveMesh].GroupNames = groupNames;
         }
+
+        public int AppendQuad(int i, int j)
+        {
+            throw new NotImplementedException();
+        }
     }
 
 }

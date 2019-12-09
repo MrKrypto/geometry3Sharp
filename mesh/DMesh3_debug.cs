@@ -310,5 +310,13 @@ namespace g3
             return is_ok;
         }
 
+        internal int AppendQuad(int t1, int t2)
+        {
+            int quid = quads_refcount.allocate();
+            int i = 2 * quid;
+            quads.insert(t2, i + 1);
+            quads.insert(t1, i);
+            return quid;
+        }
     }
 }

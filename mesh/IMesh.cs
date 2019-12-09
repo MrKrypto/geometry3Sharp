@@ -101,6 +101,8 @@ namespace g3
         int AppendTriangle(int i, int j, int k);
         int AppendTriangle(int i, int j, int k, int g);
 
+        int AppendQuad(int i, int j);
+
 
         // material handling
 

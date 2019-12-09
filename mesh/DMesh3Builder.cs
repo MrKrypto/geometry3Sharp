@@ -198,6 +198,11 @@ namespace g3
         {
             Meshes[nActiveMesh].GroupNames = groupNames;
         }
+
+        public int AppendQuad(int i, int j)
+        {
+            return Meshes[nActiveMesh].AppendQuad(i, j);
+        }
     }
 
 
